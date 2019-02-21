@@ -1,4 +1,4 @@
-import os, time, logging, requests
+import os, time, logging, requests, pika
 #telegram import libraries
 import telepot, time, re, sys
 from telepot.loop import MessageLoop, Orderer
@@ -9,22 +9,12 @@ from telepot.delegate import (
 
 # initialize Deploy(ctr) object.
 class Deploy(object):
-    def __init__(self, deploy_ctr_ip):
-        self.base_url = 'http://%s:8000/deployer' %deploy_ctr_ip
-        self.deploy_ctr_ip = deploy_ctr_ip
-        requests.packages.urllib3.disable_warnings()
-        self.s = requests.Session()
-        #self.s.auth = (self.username, self.password)
-        self.s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
-        
+    def __init__(self):
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
+        channel.queue_declare(queue='hello')
 
-    # Send check cluster request to deployer ctr
-    def check_cluster_status(self, body):
-        print('check cluster status, body: %s' %body)
-        return 'checking cluster status'
-        
-    def __str__(self):
-        return self.deploy_ctr_ip
+
 
 # read network variables from environment variables that passed to container during run.
 def network():
@@ -68,25 +58,37 @@ def api2():
     }
     return cluster_vars
 
-    
 
-def handler(msg):
-    print(msg['text'])
+class Botik(object):
+    def __init__(self, token, deploy, api2_vars):
+        self.token = token
+        self.deploy = deploy
+        self.api2_vars = api2_vars
+        self.bot = telepot.Bot(self.token)
+        MessageLoop(self.bot, {'chat': self.handler,
+                  'callback_query': self.callback}).run_as_thread()
+        logging.info('bot started listening')
 
 
-def callback(msg):
-    nonlocal api2_vars
-    print(msg)
-    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
-    print('Callback Query:', query_id, from_id, query_data)
-    if query_data == 'start':    ## checking call back data, and starting cluster status check process
-        cluster_status = deploy.check_cluster_status(api2_vars)    ## sending api2vars to deploy.check_cluster_status call to send to deployer ctr. 
-        bot.answerCallbackQuery(query_id, text='data: %s' %cluster_status)
+    def handler(self, msg):
+        print(msg['text'])
+
+
+    def callback(self, msg):
+        print(msg)
+        query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
+        logging.info('Callback Query:', query_id, from_id, query_data)
+        if query_data == 'start':    ## checking call back data, and starting cluster status check process
+            message = {'action':'checkcluster', 'asd':self.api2_vars}
+            channel.basic_publish(exchange='',
+                      routing_key='hello',
+                      body=json.dumps(message))
+            self.bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
 
 
 def main():
     # Log object
-    logging.basicConfig(filename='telegram_ctr.log', format='%(asctime)s:%(levelname)s:%(message)s', level=6)
+    logging.basicConfig(filename='telegram_ctr.log', format='%(asctime)s:%(levelname)s:%(message)s', level=5)
     #init vars
     print(os.environ.keys)
     network_vars = network()
@@ -95,26 +97,21 @@ def main():
     api2_vars = api2()
     deploy_ctr_ip = os.environ['deploy_ctr_ip']
     # Initialize Deploy object
-    global deploy # declaring deploy global to make sure that callback function can access it
-    deploy = Deploy(deploy_ctr_ip)
-    print(deploy)
-    logging.info('initialized deploy object')
+    channel = Deploy()
     #telegram token for bot
     token = '168023423:AAFa-zgvR_8Xw8iRuyG2QxIyQdNCwMqDHA8'
     logging.info('Token: %s' %token)
     #initialize bot
-    bot = telepot.Bot(token)
+    botik = Botik(token, deploy, api2_vars)
     chat_id = '165756165'
     logging.info('container started')
-    bot.sendMessage(chat_id, 'container started')
-    MessageLoop(bot, {'chat': handler,
-                  'callback_query': callback}).run_as_thread()
+    botik.bot.sendMessage(chat_id, 'container started')
     logging.info('bot started listening')
     # start checking process?
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
                    [InlineKeyboardButton(text='start cluster_ip: %s' %api3_vars['cluster_ip'], callback_data='start')],
                ])
-    bot.sendMessage(chat_id, 'a', reply_markup=keyboard)
+    botik.bot.sendMessage(chat_id, 'a', reply_markup=keyboard)
     # while loop to keep bot listening..
     while 1:
         time.sleep(10)
