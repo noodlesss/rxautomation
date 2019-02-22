@@ -10,7 +10,7 @@ def callback(ch, method, properties, body):
     print (" [x] Done")
 
 channel.basic_consume(callback, queue='hello', no_ack=True)
-print (listening)
+print ('listening')
 channel.start_consuming()
 
 

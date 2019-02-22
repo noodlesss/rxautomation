@@ -1,19 +1,10 @@
-import os, time, logging, requests, pika
+import os,json, time, logging, requests, pika
 #telegram import libraries
 import telepot, time, re, sys
 from telepot.loop import MessageLoop, Orderer
 from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 from telepot.delegate import (
     per_chat_id, per_callback_query_origin, create_open, pave_event_space)
-
-
-# initialize Deploy(ctr) object.
-class Deploy(object):
-    def __init__(self):
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-        channel = connection.channel()
-        channel.queue_declare(queue='hello')
-
 
 
 # read network variables from environment variables that passed to container during run.
@@ -60,9 +51,11 @@ def api2():
 
 
 class Botik(object):
-    def __init__(self, token, deploy, api2_vars):
+    def __init__(self, token, api2_vars):
         self.token = token
-        self.deploy = deploy
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        self.channel = self.connection.channel()
+        self.channel.queue_declare(queue='hello')
         self.api2_vars = api2_vars
         self.bot = telepot.Bot(self.token)
         MessageLoop(self.bot, {'chat': self.handler,
@@ -80,7 +73,7 @@ class Botik(object):
         logging.info('Callback Query:', query_id, from_id, query_data)
         if query_data == 'start':    ## checking call back data, and starting cluster status check process
             message = {'action':'checkcluster', 'asd':self.api2_vars}
-            channel.basic_publish(exchange='',
+            self.channel.basic_publish(exchange='',
                       routing_key='hello',
                       body=json.dumps(message))
             self.bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
@@ -88,7 +81,7 @@ class Botik(object):
 
 def main():
     # Log object
-    logging.basicConfig(filename='telegram_ctr.log', format='%(asctime)s:%(levelname)s:%(message)s', level=5)
+    logging.basicConfig(filename='telegram_ctr.log', format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
     #init vars
     print(os.environ.keys)
     network_vars = network()
@@ -96,13 +89,11 @@ def main():
     api3_vars = api3()
     api2_vars = api2()
     deploy_ctr_ip = os.environ['deploy_ctr_ip']
-    # Initialize Deploy object
-    channel = Deploy()
     #telegram token for bot
     token = '168023423:AAFa-zgvR_8Xw8iRuyG2QxIyQdNCwMqDHA8'
     logging.info('Token: %s' %token)
     #initialize bot
-    botik = Botik(token, deploy, api2_vars)
+    botik = Botik(token, api2_vars)
     chat_id = '165756165'
     logging.info('container started')
     botik.bot.sendMessage(chat_id, 'container started')
