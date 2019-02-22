@@ -49,6 +49,10 @@ def api2():
     }
     return cluster_vars
 
+def callback(ch, method, properties, body):
+    body = json.loads(body)
+    botik.bot.sendMessage(chat_id, body)
+    log.INFO('task: %s\n result: %s') %(body['task'], body['result'])
 
 class Botik(object):
     def __init__(self, token, api3_vars):
