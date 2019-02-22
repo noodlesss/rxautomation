@@ -26,7 +26,7 @@ def publisher(message):
     channel_reply.basic_publish(exchange='',
                       routing_key='hello',
                       body=json.dumps(message))
-    logging.INFO('publisher started')
+    logging.info('publisher started')
     
 
 #checking to see if cluster install is finished, so we can run actions.
@@ -66,7 +66,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 channel.queue_declare(queue='deployer')
 channel.basic_consume(callback, queue='deployer', no_ack=True)
-logging.INFO('consumer started. listening..')
+logging.info('consumer started. listening..')
 channel.start_consuming()
 
 
