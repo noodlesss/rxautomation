@@ -9,8 +9,8 @@ class nutanixApiv3(object):
 
   def vm_create(self, body):
     '''required params in body:
-{memory_mb, name, num_vcpus ,cluster_reference{kind, uuid}, metadata{"kind": "vm"}}
-'''
+            {memory_mb, name, num_vcpus ,cluster_reference{kind, uuid}, metadata{"kind": "vm"}}
+    '''
     requests.packages.urllib3.disable_warnings()
     s = requests.Session()
     s.auth = (self.username, self.password)
@@ -19,7 +19,7 @@ class nutanixApiv3(object):
     return data
 
   def vm_update(self, vm_uuid, body):
-  '''required params in body:
+    '''required params in body:
         {memory_mb, name, num_vcpus ,cluster_reference{kind, uuid},  metadata{"kind": "vm", "spec_version"}, "hardware_clock_timezone"}
     '''
     requests.packages.urllib3.disable_warnings()
