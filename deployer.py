@@ -13,9 +13,8 @@ connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 channel.queue_declare(queue='hello')
 
-
-bot = telepot.Bot(token)
 token = '168023423:AAFa-zgvR_8Xw8iRuyG2QxIyQdNCwMqDHA8'
+bot = telepot.Bot(token)
 chat_id = '165756165'
 
 #checking to see if cluster install is finished, so we can run actions.
