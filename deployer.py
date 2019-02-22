@@ -37,6 +37,7 @@ def check_cluster_status(base_url, username, password):
 
 
 def callback(ch, method, properties, body):
+	body = json.loads(body)
     print ("[x] Received %r" % body)
     action = body['action']
     if action == 'checkcluster':
