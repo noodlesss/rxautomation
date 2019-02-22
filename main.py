@@ -55,7 +55,7 @@ class Botik(object):
         self.token = token
         self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue='hello')
+        self.channel.queue_declare(queue='deployer')
         self.api3_vars = api3_vars
         self.bot = telepot.Bot(self.token)
         MessageLoop(self.bot, {'chat': self.handler,
@@ -104,8 +104,12 @@ def main():
                ])
     botik.bot.sendMessage(chat_id, 'a', reply_markup=keyboard)
     # while loop to keep bot listening..
-    while 1:
-        time.sleep(10)
+    connection_reply = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel_reply = connection_reply.channel()
+    channel_reply.queue_declare(queue='reply')
+    channel_reply.basic_consume(callback, queue='reply', no_ack=True)
+    log.INFO('consumer started. listening..')
+    channel_reply.start_consuming()
 
     
 

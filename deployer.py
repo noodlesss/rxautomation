@@ -1,4 +1,4 @@
-import pika, json, requests
+import pika, json, requests, threading
 from amnesia import nutanixApiv3
 
 #telegram import libraries
@@ -8,14 +8,26 @@ from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 from telepot.delegate import (
     per_chat_id, per_callback_query_origin, create_open, pave_event_space)
 
+#logging config
+logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-channel = connection.channel()
-channel.queue_declare(queue='hello')
-
+#bot config
 token = '168023423:AAFa-zgvR_8Xw8iRuyG2QxIyQdNCwMqDHA8'
 bot = telepot.Bot(token)
 chat_id = '165756165'
+
+
+
+#publisher 
+def publisher(message):
+    connection_reply = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel_reply = connection_reply.channel()
+    channel_reply.queue_declare(queue='reply')
+    channel_reply.basic_publish(exchange='',
+                      routing_key='hello',
+                      body=json.dumps(message))
+    log.INFO('publisher started')
+    
 
 #checking to see if cluster install is finished, so we can run actions.
 def check_cluster_status(base_url, username, password):
@@ -44,14 +56,17 @@ def callback(ch, method, properties, body):
     if action == 'checkcluster':
         cluster_status = check_cluster_status(body['data']['base_url'], body['data']['username'], body['data']['password'])
         if cluster_status == True:
-            bot.sendMessage(chat_id, 'cluster ready')
+            publisher(json.dumps({'task':'cluster_status', 'result': 'cluster up'}))
         else:
-            bot.sendMessage(chat_id, 'check failed')
+            publisher(json.dumps({'task':'cluster_status', 'result': 'check failed'}))
     print (" [x] Done")
 
 
-channel.basic_consume(callback, queue='hello', no_ack=True)
-print ('listening')
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+channel = connection.channel()
+channel.queue_declare(queue='deployer')
+channel.basic_consume(callback, queue='deployer', no_ack=True)
+log.INFO('consumer started. listening..')
 channel.start_consuming()
 
 
