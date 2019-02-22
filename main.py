@@ -51,12 +51,12 @@ def api2():
 
 
 class Botik(object):
-    def __init__(self, token, api2_vars):
+    def __init__(self, token, api3_vars):
         self.token = token
         self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue='hello')
-        self.api2_vars = api2_vars
+        self.api3_vars = api3_vars
         self.bot = telepot.Bot(self.token)
         MessageLoop(self.bot, {'chat': self.handler,
                   'callback_query': self.callback}).run_as_thread()
@@ -72,7 +72,7 @@ class Botik(object):
         query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
         logging.info('Callback Query: %s' %(query_data))
         if query_data == 'start':    ## checking call back data, and starting cluster status check process
-            message = {'action':'checkcluster', 'data':self.api2_vars}
+            message = {'action':'checkcluster', 'data':self.api3_vars}
             self.channel.basic_publish(exchange='',
                       routing_key='hello',
                       body=json.dumps(message))
@@ -93,7 +93,7 @@ def main():
     token = '168023423:AAFa-zgvR_8Xw8iRuyG2QxIyQdNCwMqDHA8'
     logging.info('Token: %s' %token)
     #initialize bot
-    botik = Botik(token, api2_vars)
+    botik = Botik(token, api3_vars)
     chat_id = '165756165'
     logging.info('container started')
     botik.bot.sendMessage(chat_id, 'container started')
