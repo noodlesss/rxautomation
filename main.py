@@ -72,7 +72,7 @@ class Botik(object):
         query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
         logging.info('Callback Query: %s' %(query_data))
         if query_data == 'start':    ## checking call back data, and starting cluster status check process
-            message = {'action':'checkcluster', 'asd':self.api2_vars}
+            message = {'action':'checkcluster', 'data':self.api2_vars}
             self.channel.basic_publish(exchange='',
                       routing_key='hello',
                       body=json.dumps(message))

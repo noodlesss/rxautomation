@@ -41,7 +41,7 @@ def callback(ch, method, properties, body):
     print ("[x] Received %r" % body)
     action = body['action']
     if action == 'checkcluster':
-        cluster_status = check_cluster_status(body['base_url'], body['username'], body['password'])
+        cluster_status = check_cluster_status(body['data']['base_url'], body['data']['username'], body['data']['password'])
         if cluster_status == True:
             bot.sendMessage(chat_id, 'cluster ready')
         else:
