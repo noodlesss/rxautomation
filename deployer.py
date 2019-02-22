@@ -37,7 +37,7 @@ def check_cluster_status(base_url, username, password):
 
 
 def callback(ch, method, properties, body):
-	body = json.loads(body)
+    body = json.loads(body)
     print ("[x] Received %r" % body)
     action = body['action']
     if action == 'checkcluster':
@@ -45,7 +45,7 @@ def callback(ch, method, properties, body):
         if cluster_status == True:
             bot.sendMessage(chat_id, 'cluster ready')
         else:
-        	bot.sendMessage(chat_id, 'check failed')
+            bot.sendMessage(chat_id, 'check failed')
     print (" [x] Done")
 
 
