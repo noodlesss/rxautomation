@@ -78,7 +78,7 @@ class Botik(object):
         if query_data == 'start':    ## checking call back data, and starting cluster status check process
             message = {'action':'checkcluster', 'data':self.api3_vars}
             self.channel.basic_publish(exchange='',
-                      routing_key='hello',
+                      routing_key='deployer',
                       body=json.dumps(message))
             self.bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
 

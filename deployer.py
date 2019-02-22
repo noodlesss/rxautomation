@@ -24,7 +24,7 @@ def publisher(message):
     channel_reply = connection_reply.channel()
     channel_reply.queue_declare(queue='reply')
     channel_reply.basic_publish(exchange='',
-                      routing_key='hello',
+                      routing_key='reply',
                       body=json.dumps(message))
     logging.info('publisher started')
     
