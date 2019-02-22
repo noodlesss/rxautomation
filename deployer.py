@@ -1,4 +1,4 @@
-import pika, json, requests, threading
+import pika, json, requests, threading, logging
 from amnesia import nutanixApiv3
 
 #telegram import libraries
