@@ -25,15 +25,15 @@ def check_cluster_status(base_url, username, password):
         try:
             data = api.network_list()
             if data.status_code == 200:
-                print 'counting...'
+                print('counting...')
                 time.sleep(120)
-                print 'True'
+                print('True')
                 return True
             else:
-                print 'waiting...'
+                print('waiting...')
                 time.sleep(900)
         except requests.exceptions.ConnectTimeout as e:
-            print 'waiting'
+            print('waiting')
             time.sleep(900)
 
 
