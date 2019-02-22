@@ -52,7 +52,7 @@ def api2():
 def callback(ch, method, properties, body):
     body = json.loads(body)
     botik.bot.sendMessage(chat_id, body)
-    log.INFO('task: %s\n result: %s') %(body['task'], body['result'])
+    logging.INFO('task: %s\n result: %s') %(body['task'], body['result'])
 
 class Botik(object):
     def __init__(self, token, api3_vars):
@@ -112,7 +112,7 @@ def main():
     channel_reply = connection_reply.channel()
     channel_reply.queue_declare(queue='reply')
     channel_reply.basic_consume(callback, queue='reply', no_ack=True)
-    log.INFO('consumer started. listening..')
+    logging.INFO('consumer started. listening..')
     channel_reply.start_consuming()
 
     
