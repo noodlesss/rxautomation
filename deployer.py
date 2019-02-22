@@ -23,6 +23,7 @@ def check_cluster_status(base_url, username, password):
     while True:
         try:
             data = api.network_list()
+            print('data.status_code', 'data.text')
             if data.status_code == 200:
                 print('counting...')
                 time.sleep(120)
