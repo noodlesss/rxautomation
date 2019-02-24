@@ -52,8 +52,15 @@ def api2():
 # Rabbitmq queue callback
 def con_callback(ch, method, properties, body):
     body = json.loads(body)
-    botik.bot.sendMessage(chat_id, body)
     logging.info('task: %s\n result: %s') %(body['task'], body['result'])
+    if body['task'] == 'cluster_status' and body['result'] == 'cluster up':
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+               [InlineKeyboardButton(text='Create network', callback_data='create_network')],
+           ])
+        bot.sendMessage(chat_id, 'cluster %s:\n ' %api3_vars['cluster_ip'], reply_markup=keyboard)
+    else:
+        ot.sendMessage(chat_id, body)
+
 
 
         
@@ -69,13 +76,13 @@ def callback(msg):
     logging.info('Callback Query: %s' %(query_data))
     if query_data == 'start':    ## checking call back data, and starting cluster status check process
         message = {'action':'checkcluster', 'apidata':api3_vars}
-        channel.basic_publish(exchange='',
+        channel_deployer.basic_publish(exchange='',
                   routing_key='deployer',
                   body=json.dumps(message))
         bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
     elif query_data == 'create_network':
         message = {'action':'create_network', 'data':network_vars, 'apidata': api2_vars}
-        channel.basic_publish(exchange='',
+        channel_deployer.basic_publish(exchange='',
                   routing_key='deployer',
                   body=json.dumps(message))
         bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
@@ -100,15 +107,18 @@ MessageLoop(bot, {'chat': handler,
                   'callback_query': callback}).run_as_thread()
 logging.info('bot started listening')
 bot.sendMessage(chat_id, 'container started')
-logging.info('bot started listening')
+# deployer queue channel
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+channel_deployer = connection.channel()
+channel_deployer.queue_declare(queue='reply')
+
 # start checking process?
 keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='start cluster_ip: %s' %api3_vars['cluster_ip'], callback_data='start')],
            ])
 bot.sendMessage(chat_id, 'a', reply_markup=keyboard)
 # while loop to keep bot listening..
-connection_reply = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-channel_reply = connection_reply.channel()
+channel_reply = connection.channel()
 channel_reply.queue_declare(queue='reply')
 channel_reply.basic_consume(con_callback, queue='reply', no_ack=True)
 logging.info('consumer started. listening..')
