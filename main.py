@@ -68,19 +68,24 @@ def callback(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     logging.info('Callback Query: %s' %(query_data))
     if query_data == 'start':    ## checking call back data, and starting cluster status check process
-        message = {'action':'checkcluster', 'data':api3_vars}
+        message = {'action':'checkcluster', 'apidata':api3_vars}
+        channel.basic_publish(exchange='',
+                  routing_key='deployer',
+                  body=json.dumps(message))
+        bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
+    elif query_data == 'create_network':
+        message = {'action':'create_network', 'data':network_vars, 'apidata': api2_vars}
         channel.basic_publish(exchange='',
                   routing_key='deployer',
                   body=json.dumps(message))
         bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
 
 
-
 # Log object
 logging.basicConfig(filename='main_ctr.log', format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 logging.info('container started')
 #init vars
-print(os.environ.keys)
+logging.info('envars: %s' % os.environ.keys)
 network_vars = network()
 pc_vars = pc()
 api3_vars = api3()
@@ -94,7 +99,7 @@ bot = telepot.Bot(token)
 MessageLoop(bot, {'chat': handler,
                   'callback_query': callback}).run_as_thread()
 logging.info('bot started listening')
-botik.bot.sendMessage(chat_id, 'container started')
+bot.sendMessage(chat_id, 'container started')
 logging.info('bot started listening')
 # start checking process?
 keyboard = InlineKeyboardMarkup(inline_keyboard=[
