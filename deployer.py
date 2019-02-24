@@ -1,5 +1,6 @@
-import pika, json, requests, threading, logging
+import pika, json, requests, threading, logging, network_create_v2
 from amnesia import nutanixApiv3
+
 
 #telegram import libraries
 import telepot, time, re, sys
@@ -54,11 +55,14 @@ def callback(ch, method, properties, body):
     print ("[x] Received %r" % body)
     action = body['action']
     if action == 'checkcluster':
-        cluster_status = check_cluster_status(body['data']['base_url'], body['data']['username'], body['data']['password'])
+        cluster_status = check_cluster_status(body['apidata']['base_url'], body['apidata']['username'], body['apidata']['password'])
         if cluster_status == True:
             publisher(json.dumps({'task':'cluster_status', 'result': 'cluster up'}))
         else:
             publisher(json.dumps({'task':'cluster_status', 'result': 'check failed'}))
+    elif action == 'create_network':
+        create_network = network_create_v2.netcreate(body['apidata'])
+        publisher(json.dumps({'task': 'create_network', 'result': create_network.status_code}))
     print (" [x] Done")
 
 

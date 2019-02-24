@@ -58,6 +58,8 @@ def con_callback(ch, method, properties, body):
                [InlineKeyboardButton(text='Create network', callback_data='create_network')],
            ])
         bot.sendMessage(chat_id, 'cluster %s:\n ' %api3_vars['cluster_ip'], reply_markup=keyboard)
+    elif body['task'] == 'create_network':
+        bot.sendMessage(chat_id, 'network create task status code: %s' %body['result'])
     else:
         bot.sendMessage(chat_id, body)
 
@@ -80,7 +82,7 @@ def callback(msg):
                   routing_key='deployer',
                   body=json.dumps(message))
         bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
-    elif query_data == 'create_network':
+    elif query_data == 'create_network':  ## create network
         message = {'action':'create_network', 'data':network_vars, 'apidata': api2_vars}
         channel_deployer.basic_publish(exchange='',
                   routing_key='deployer',

@@ -21,14 +21,17 @@ body = {
     }
 
 
-def netcreate(url, username, password, network):
-	api = nutanixApi(url, username, password)
-	body['vlan_id'] = network['vlan_id']
-	body['pool'][0]['range'] = network['range'].replace('-',' ')
-	body['default_gateway'] = network['default_gateway']
-	body['prefix_length'] = network['prefix_length']
-	body['network_address'] = network['network_address']
-	body['dhcp_options']['domain_name_servers'] = network['domain_name_servers']
-	body['name'] = network['name']
-	data = api.network_create(body)
-	return data
+def netcreate(network):
+  url = network['apidata']['base_url']
+  username = network['apidata']['username']
+  password = network['apidata']['password']
+  api = nutanixApi(url, username, password)
+  body['vlan_id'] = network['data']['vlan_id']
+  body['pool'][0]['range'] = network['data']['range'].replace('-',' ')
+  body['default_gateway'] = network['data']['default_gateway']
+  body['prefix_length'] = network['data']['prefix_length']
+  body['network_address'] = network['data']['network_address']
+  body['dhcp_options']['domain_name_servers'] = network['data']['domain_name_servers']
+  body['name'] = network['data']['name']
+  data = api.network_create(body)
+  return data
