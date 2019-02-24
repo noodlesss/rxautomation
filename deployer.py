@@ -36,7 +36,6 @@ def check_cluster_status(base_url, username, password):
     while True:
         try:
             data = api.network_list()
-            print(data.status_code, data.text)
             if data.status_code == 200:
                 print('counting...')
                 time.sleep(120)
@@ -61,7 +60,7 @@ def callback(ch, method, properties, body):
         else:
             publisher({'task':'cluster_status', 'result': 'check failed'})
     elif action == 'create_network':
-        create_network = network_create_v2.netcreate(body['apidata'])
+        create_network = network_create_v2.netcreate(body)
         publisher({'task': 'create_network', 'result': create_network.status_code})
     print (" [x] Done")
 
