@@ -57,12 +57,12 @@ def callback(ch, method, properties, body):
     if action == 'checkcluster':
         cluster_status = check_cluster_status(body['apidata']['base_url'], body['apidata']['username'], body['apidata']['password'])
         if cluster_status == True:
-            publisher(json.dumps({'task':'cluster_status', 'result': 'cluster up'}))
+            publisher({'task':'cluster_status', 'result': 'cluster up'})
         else:
-            publisher(json.dumps({'task':'cluster_status', 'result': 'check failed'}))
+            publisher({'task':'cluster_status', 'result': 'check failed'})
     elif action == 'create_network':
         create_network = network_create_v2.netcreate(body['apidata'])
-        publisher(json.dumps({'task': 'create_network', 'result': create_network.status_code}))
+        publisher({'task': 'create_network', 'result': create_network.status_code})
     print (" [x] Done")
 
 
