@@ -99,6 +99,10 @@ network_vars = network()
 pc_vars = pc()
 api3_vars = api3()
 api2_vars = api2()
+# deployer queue channel
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+channel_deployer = connection.channel()
+channel_deployer.queue_declare(queue='deployer')
 #telegram token for bot
 token = '168023423:AAFa-zgvR_8Xw8iRuyG2QxIyQdNCwMqDHA8'
 chat_id = '165756165'
@@ -109,10 +113,6 @@ MessageLoop(bot, {'chat': handler,
                   'callback_query': callback}).run_as_thread()
 logging.info('bot started listening')
 bot.sendMessage(chat_id, 'container started')
-# deployer queue channel
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-channel_deployer = connection.channel()
-channel_deployer.queue_declare(queue='deployer')
 # start checking process?
 keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='start cluster_ip: %s' %api3_vars['cluster_ip'], callback_data='start')],
