@@ -52,7 +52,7 @@ def api2():
 # Rabbitmq queue callback
 def con_callback(ch, method, properties, body):
     body = json.loads(body)
-    logging.info('task: %s\n result: %s') %(body['task'], body['result'])
+    logging.info('task: %s\n result: %s' %(body['task'], body['result']))
     if body['task'] == 'cluster_status' and body['result'] == 'cluster up':
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='Create network', callback_data='create_network')],
