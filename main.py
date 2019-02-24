@@ -59,7 +59,7 @@ def con_callback(ch, method, properties, body):
            ])
         bot.sendMessage(chat_id, 'cluster %s:\n ' %api3_vars['cluster_ip'], reply_markup=keyboard)
     else:
-        ot.sendMessage(chat_id, body)
+        bot.sendMessage(chat_id, body)
 
 
 
@@ -110,8 +110,7 @@ bot.sendMessage(chat_id, 'container started')
 # deployer queue channel
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel_deployer = connection.channel()
-channel_deployer.queue_declare(queue='reply')
-
+channel_deployer.queue_declare(queue='deployer')
 # start checking process?
 keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='start cluster_ip: %s' %api3_vars['cluster_ip'], callback_data='start')],
