@@ -59,7 +59,7 @@ def callback(ch, method, properties, body):
         create_network = network_create_v2.netcreate(body)
         publisher({'task': 'create_network', 'result': create_network.status_code}) # status codee 201 means task accepted. 
     elif action == 'deploy_pc':  # deploy pc
-        pc = deploy_pc.
+        pass
     logging.info(" [x] Done")
 
 
