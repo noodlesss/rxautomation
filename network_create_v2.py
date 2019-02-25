@@ -22,16 +22,16 @@ body = {
 
 
 def netcreate(network):
-  url = network['apidata']['base_url']
-  username = network['apidata']['username']
-  password = network['apidata']['password']
+  url = network["apidata"]["base_url"]
+  username = network["apidata"]["username"]
+  password = network["apidata"]["password"]
   api = nutanixApi(url, username, password)
-  body['vlan_id'] = network['data']['vlan_id']
-  body['ip_config']['pool'][0]['range'] = network['data']['range'].replace('-',' ')
-  body['ip_config']['default_gateway'] = network['data']['default_gateway']
-  body['ip_config']['prefix_length'] = network['data']['prefix_length']
-  body['ip_config']['network_address'] = network['data']['network_address']
-  body['ip_config']['dhcp_options']['domain_name_servers'] = network['data']['domain_name_servers']
-  body['name'] = network['data']['name']
+  body["vlan_id"] = int(network["data"]["vlan_id"])
+  body["ip_config"]["pool"][0]["range"] = network["data"]["range"].replace("-"," ")
+  body["ip_config"]["default_gateway"] = network["data"]["default_gateway"]
+  body["ip_config"]["prefix_length"] = int(network["data"]["prefix_length"])
+  body["ip_config"]["network_address"] = network["data"]["network_address"]
+  body["ip_config"]["dhcp_options"]["domain_name_servers"] = network["data"]["domain_name_servers"]
+  body["name"] = network["data"]["name"]
   data = api.network_create(body)
   return data

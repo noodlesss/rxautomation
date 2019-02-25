@@ -27,7 +27,7 @@ def publisher(message):
     channel_reply.basic_publish(exchange='',
                       routing_key='reply',
                       body=json.dumps(message))
-    logging.info('publisher started')
+    logging.info('published result %s' %message)
     
 
 #checking to see if cluster install is finished, so we can run actions.
@@ -37,21 +37,21 @@ def check_cluster_status(base_url, username, password):
         try:
             data = api.network_list()
             if data.status_code == 200:
-                print('counting...')
+                logging.info('counting...')
                 time.sleep(120)
-                print('True')
+                logging.info('True')
                 return True
             else:
-                print('waiting...')
+                logging.info('waiting...')
                 time.sleep(900)
         except requests.exceptions.ConnectTimeout as e:
-            print('waiting')
+            logging.info('waiting')
             time.sleep(900)
 
 
 def callback(ch, method, properties, body):
     body = json.loads(body)
-    print ("[x] Received %r" % body)
+    logging.info("[x] Received %r" % body)
     action = body['action']
     if action == 'checkcluster':
         cluster_status = check_cluster_status(body['apidata']['base_url'], body['apidata']['username'], body['apidata']['password'])
@@ -62,7 +62,7 @@ def callback(ch, method, properties, body):
     elif action == 'create_network':
         create_network = network_create_v2.netcreate(body)
         publisher({'task': 'create_network', 'result': create_network.status_code})
-    print (" [x] Done")
+    logging.info(" [x] Done")
 
 
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
