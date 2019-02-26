@@ -1,4 +1,4 @@
-import pika, json, requests, threading, logging, network_create_v2
+import pika, json, requests, threading, logging, network_create_v2, deploy_prism_central
 from amnesia import nutanixApiv3
 
 
@@ -27,7 +27,10 @@ def publisher(message):
     
 
 #checking to see if cluster install is finished, so we can run actions.
-def check_cluster_status(base_url, username, password):
+def check_cluster_status(body):
+    username = body['apidata']['username']
+    password = body['apidata']['password']
+    base_url = body['apidata']['base_url']
     api = nutanixApiv3(base_url, username, password)
     while True:
         try:
@@ -40,7 +43,7 @@ def check_cluster_status(base_url, username, password):
             else:
                 logging.info('waiting...')
                 time.sleep(900)
-        except (requests.exceptions.ConnectTimeout, urllib3.exceptions.MaxRetryError) as e:
+        except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError) as e:
             logging.info('waiting')
             time.sleep(900)
 
@@ -50,16 +53,17 @@ def callback(ch, method, properties, body):
     logging.info("[x] Received %r" % body)
     action = body['action']
     if action == 'checkcluster':    # check cluster  status
-        cluster_status = check_cluster_status(body['apidata']['base_url'], body['apidata']['username'], body['apidata']['password'])
+        cluster_status = check_cluster_status(body)
         if cluster_status == True:
             publisher({'task':'cluster_status', 'result': 'cluster up'})
         else:
             publisher({'task':'cluster_status', 'result': 'check failed'})
     elif action == 'create_network':  # create network 
         create_network = network_create_v2.netcreate(body)
-        publisher({'task': 'create_network', 'result': create_network.status_code}) # status codee 201 means task accepted. 
+        publisher({'task': 'create_network', 'result': create_network.status_code}) # status code 201 means task accepted. 
     elif action == 'deploy_pc':  # deploy pc
-        pass
+        deploypc = deploy_prism_central.deploy_pc(body)
+        publisher({'task': 'deploy_pc', 'result': deploypc.status_code}) # status code publsihed to main
     logging.info(" [x] Done")
 
 

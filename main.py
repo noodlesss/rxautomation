@@ -46,6 +46,11 @@ def bot_callback(msg):
                   routing_key='deployer',
                   body=json.dumps(message))
         bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
+    elif query_data == 'deploy_pc':
+        message = {'action': 'deploy_pc', 'data':pc_vars, 'apidata': api3_vars, 'api2data': api2_vars}
+        channel_deployer.basic_publish(exchange='',
+                  routing_key='deployer',
+                  body=json.dumps(message))
 
 
 # Log object

@@ -21,7 +21,8 @@ def pc():
         'cluster_ip': os.environ['cluster_ip'],
         'username': os.environ['username'],
         'password': os.environ['password'],
-        'base_url': "https://%s:9440/api/nutanix/v3/" %os.environ['cluster_ip']    
+        'base_url': "https://%s:9440/api/nutanix/v3/" %os.environ['cluster_ip'],    
+        'default_gateway': os.environ['default_gateway']
     }
     return pc_vars
 
