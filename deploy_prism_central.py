@@ -47,7 +47,7 @@ def deploy_pc(body):
     try:
       data = data.json()
       for i in data['entities']:
-        if i['status']['name'] == 'autonet':
+        if i['status']['name'] == 'autodeploy':
           net_uuid = i['metadata']['uuid']
           logging.info('net = %s' %net_uuid)
           break
