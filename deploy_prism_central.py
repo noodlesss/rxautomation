@@ -36,7 +36,7 @@ pc_body = {
 
 def deploy_pc(body):
     username = body['apidata']['username']
-    username = body['apidata']['password']
+    password = body['apidata']['password']
     pc_ip = body['data']['pc_ip']
     api2_url = body['api2data']['base_url']
     base_url = body['apidata']['base_url']
