@@ -16,7 +16,8 @@ def reply_queue_callback(ch, method, properties, body):
     logging.info('task: %s\n result: %s' %(body['task'], body['result']))
     if body['task'] == 'cluster_status' and body['result'] == 'cluster up':
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
-               [InlineKeyboardButton(text='Create network', callback_data='create_network')],
+               [InlineKeyboardButton(text='Create network', callback_data='create_network')], 
+               [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploy_pc')]
            ])
         bot.sendMessage(chat_id, 'cluster %s:\n ' %api3_vars['cluster_ip'], reply_markup=keyboard)
     elif body['task'] == 'create_network':
