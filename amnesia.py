@@ -65,6 +65,17 @@ class nutanixApiv3(object):
     data = s.get(url + 'storage_containers/' ,verify=False)
     return data
 
+
+  def task_status(self, task_uuid):
+    requests.packages.urllib3.disable_warnings()
+    s = requests.Session()
+    s.auth = (self.username, self.password)
+    s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+    data = s.post(self.base_url + 'tasks/%s' %task_uuid, verify=False)
+    return data
+
+
+
 class nutanixApiv1(object):
   def __init__(self, cluster_ip, username, password):
     self.base_url = 'https://%s:9440/PrismGateway/services/rest/v1/' %cluster_ip

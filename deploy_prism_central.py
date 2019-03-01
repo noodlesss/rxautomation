@@ -3,7 +3,7 @@ from amnesia import nutanixApiv3
 
 pc_body = {  
       "resources":{  
-        "version":"5.10.0.1",
+        "version":"5.10.1.1",
         "should_auto_register":False,
         "pc_vm_list":[  
           {  
@@ -68,5 +68,6 @@ def deploy_pc(body):
     pc_body['resources']['pc_vm_list'][0]['container_uuid'] = ctr_uuid
     pc_body['resources']['pc_vm_list'][0]['nic_list'][0]['ip_list'][0] = pc_ip
     pc_body['resources']['pc_vm_list'][0]['nic_list'][0]['network_configuration']['network_uuid'] = net_uuid
+    pc_body['resources']['pc_vm_list'][0]['nic_list'][0]['network_configuration']['default_gateway'] = body['data']['default_gateway']
     pc_dep = api.pc_deploy(pc_body)
     return pc_dep

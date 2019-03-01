@@ -1,4 +1,4 @@
-import pika, json, requests, threading, logging, network_create_v2, deploy_prism_central
+import pika, json, requests, threading, logging, network_create_v2, deploy_prism_central, time
 from amnesia import nutanixApiv3
 
 
@@ -12,7 +12,7 @@ from telepot.delegate import (
 #logging config
 logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 
-
+threads = []
 
 
 #publisher 
@@ -25,6 +25,32 @@ def publisher(message):
                       body=json.dumps(message))
     logging.info('published result %s' %message)
     
+#thread function for task status check
+def check_task_status(task_uuid, body):
+    username = body['apidata']['username']
+    password = body['apidata']['password']
+    base_url = body['apidata']['base_url']
+    api = nutanixApiv3(base_url, username, password)
+    n = 0
+    while n < 3:
+        data = api.task_status(task_uuid)
+        if data.status_code == 200 and data.json()['status'] == 'COMPLETE':
+            publisher({'task': 'deploy_pc', 'result': 'completed'})
+            return
+        elif data.status_code == 200 and data.json()['status'] == 'RUNNING':
+            logging.info('task status: RUNNING' )
+            logging.info('task check sleeping 2 minutes')
+            time.sleep(120)
+        else:
+            logging.info('task status: %s' %data.text)
+            n+=1
+    return
+
+# thread creator
+def thread_func(task_uuid, body):
+    t = threading.Thread(target=check_task_status, args=(task_uuid, body))
+    threads.append(t)
+    t.start()
 
 #checking to see if cluster install is finished, so we can run actions.
 def check_cluster_status(body):
@@ -65,6 +91,9 @@ def callback(ch, method, properties, body):
     elif action == 'deploy_pc':  # deploy pc
         deploypc = deploy_prism_central.deploy_pc(body)
         publisher({'task': 'deploy_pc', 'result': deploypc.status_code}) # status code publsihed to main
+        if deploypc.status_code == 202:
+            task_uuid = data.json()
+            thread_func(task_uuid, body)
     logging.info(" [x] Done")
 
 
