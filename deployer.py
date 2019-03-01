@@ -44,6 +44,7 @@ def check_task_status(task_uuid, body):
         else:
             logging.info('task status: %s' %data.text)
             n+=1
+            time.sleep(60)
     return
 
 # thread creator

@@ -71,7 +71,7 @@ class nutanixApiv3(object):
     s = requests.Session()
     s.auth = (self.username, self.password)
     s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
-    data = s.post(self.base_url + 'tasks/%s' %task_uuid, verify=False)
+    data = s.get(self.base_url + 'tasks/%s' %task_uuid, verify=False)
     return data
 
 
