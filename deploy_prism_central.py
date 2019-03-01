@@ -1,4 +1,4 @@
-import json, requests
+import json, requests, logging
 from amnesia import nutanixApiv3
 
 pc_body = {  
