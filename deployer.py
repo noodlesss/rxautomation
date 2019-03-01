@@ -36,15 +36,15 @@ def check_cluster_status(body):
         try:
             data = api.network_list()
             if data.status_code == 200:
-                logging.info('counting...')
-                time.sleep(120)
+                logging.info('one minute please..')
+                time.sleep(60)
                 logging.info('True')
                 return True
             else:
-                logging.info('waiting...')
+                logging.info('CLuster is not ready. sleeping 15 mins...')
                 time.sleep(900)
         except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError) as e:
-            logging.info('waiting')
+            logging.info('exception - %s\n sleeping 15 mins' %e)
             time.sleep(900)
 
 
