@@ -45,6 +45,7 @@ def check_cluster_status(body):
                 time.sleep(900)
         except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError) as e:
             logging.info('exception - %s\n sleeping 15 mins' %e)
+            publisher({'task' : 'cluster_status', 'result': 'error: %s' %e})
             time.sleep(900)
 
 

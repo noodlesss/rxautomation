@@ -22,6 +22,8 @@ def reply_queue_callback(ch, method, properties, body):
         bot.sendMessage(chat_id, 'cluster %s:\n ' %api3_vars['cluster_ip'], reply_markup=keyboard)
     elif body['task'] == 'create_network':
         bot.sendMessage(chat_id, 'network create task status code: %s' %body['result'])
+    elif body['tasl'] == 'cluster_status':
+        bot.sendMessage(chat_id, 'cluster status: %s' %body['result'])
     else:
         bot.sendMessage(chat_id, body)
 
