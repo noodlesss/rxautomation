@@ -34,8 +34,8 @@ def check_task_status(task_uuid, body):
     n = 0
     while n < 3:
         data = api.task_status(task_uuid)
-        if data.status_code == 200 and data.json()['status'] == 'COMPLETE':
-            publisher({'task': 'deploy_pc', 'result': 'completed'})
+        if data.status_code == 200 and data.json()['status'] == 'SUCCEEDED':
+            publisher({'task': 'deploy_pc', 'result': 'SUCCEEDED'})
             return
         elif data.status_code == 200 and data.json()['status'] == 'RUNNING':
             logging.info('task status: RUNNING' )
