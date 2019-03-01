@@ -92,7 +92,7 @@ def callback(ch, method, properties, body):
         deploypc = deploy_prism_central.deploy_pc(body)
         publisher({'task': 'deploy_pc', 'result': deploypc.status_code}) # status code publsihed to main
         if deploypc.status_code == 202:
-            task_uuid = data.json()
+            task_uuid = deploypc.json()
             thread_func(task_uuid, body)
     logging.info(" [x] Done")
 
