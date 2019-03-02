@@ -22,9 +22,9 @@ body = {
 
 
 def netcreate(network):
-  url = network["apidata"]["base_url"]
-  username = network["apidata"]["username"]
-  password = network["apidata"]["password"]
+  url = network["data"]["api2_base_url"]
+  username = network["data"]["username"]
+  password = network["data"]["password"]
   api = nutanixApi(url, username, password)
   body["vlan_id"] = int(network["data"]["vlan_id"])
   body["ip_config"]["pool"][0]["range"] = network["data"]["range"].replace("-"," ")

@@ -1,6 +1,6 @@
 import os,json, time, logging, requests, pika
 # import variable constructors
-from var_construct import *
+import var_construct
 #telegram import libraries
 import telepot, time, re, sys
 from telepot.loop import MessageLoop, Orderer
@@ -20,12 +20,8 @@ def reply_queue_callback(ch, method, properties, body):
                [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploy_pc')]
            ])
         bot.sendMessage(chat_id, 'cluster %s:\n ' %api3_vars['cluster_ip'], reply_markup=keyboard)
-    elif body['task'] == 'create_network':
-        bot.sendMessage(chat_id, 'network create task status code: %s' %body['result'])
-    elif body['task'] == 'cluster_status':
-        bot.sendMessage(chat_id, 'cluster status: %s' %body['result'])
     else:
-        bot.sendMessage(chat_id, body)
+        bot.sendMessage(chat_id, '%s: %s' %(body['task'], body['result']))
 
 
 # Telegram handler
@@ -37,34 +33,18 @@ def bot_callback(msg):
     print(msg)
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     logging.info('Callback Query: %s' %(query_data))
-    if query_data == 'start':    ## checking call back data, and starting cluster status check process
-        message = {'action':'checkcluster', 'apidata':api3_vars}
-        channel_deployer.basic_publish(exchange='',
+    message = {'action': query_data, 'data': envars}
+    channel_deployer.basic_publish(exchange='',
                   routing_key='deployer',
                   body=json.dumps(message))
-        bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
-    elif query_data == 'create_network':  ## create network
-        message = {'action':'create_network', 'data':network_vars, 'apidata': api2_vars}
-        channel_deployer.basic_publish(exchange='',
-                  routing_key='deployer',
-                  body=json.dumps(message))
-        bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
-    elif query_data == 'deploy_pc':
-        message = {'action': 'deploy_pc', 'data':pc_vars, 'apidata': api3_vars, 'api2data': api2_vars}
-        channel_deployer.basic_publish(exchange='',
-                  routing_key='deployer',
-                  body=json.dumps(message))
-
+    bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
 
 # Log object
 logging.basicConfig(filename='main_ctr.log', format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 logging.info('container started')
 #init vars
 logging.info('envars: %s' % os.environ.keys)
-network_vars = network()
-pc_vars = pc()
-api3_vars = api3()
-api2_vars = api2()
+envars = var_construct.envars
 # deployer queue channel
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel_deployer = connection.channel()

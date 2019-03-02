@@ -27,9 +27,9 @@ def publisher(message):
     
 #thread function for task status check
 def check_task_status(task_uuid, body):
-    username = body['apidata']['username']
-    password = body['apidata']['password']
-    base_url = body['apidata']['base_url']
+    username = body['data']['username']
+    password = body['data']['password']
+    base_url = body['data']['base_url']
     api = nutanixApiv3(base_url, username, password)
     n = 0
     while n < 3:
@@ -55,9 +55,9 @@ def thread_func(task_uuid, body):
 
 #checking to see if cluster install is finished, so we can run actions.
 def check_cluster_status(body):
-    username = body['apidata']['username']
-    password = body['apidata']['password']
-    base_url = body['apidata']['base_url']
+    username = body['data']['username']
+    password = body['data']['password']
+    base_url = body['data']['base_url']
     api = nutanixApiv3(base_url, username, password)
     while True:
         try:

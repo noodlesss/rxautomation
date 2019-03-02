@@ -35,11 +35,11 @@ pc_body = {
 
 
 def deploy_pc(body):
-    username = body['apidata']['username']
-    password = body['apidata']['password']
+    username = body['data']['username']
+    password = body['data']['password']
     pc_ip = body['data']['pc_ip']
-    api2_url = body['api2data']['base_url']
-    base_url = body['apidata']['base_url']
+    api2_url = body['data']['api2_base_url']
+    base_url = body['data']['base_url']
     default_gateway = body['data']['default_gateway']
     api = nutanixApiv3(base_url, username, password)
   ## GETTING RX-AUtomation-Network uuid from cluster
@@ -47,7 +47,7 @@ def deploy_pc(body):
     try:
       data = data.json()
       for i in data['entities']:
-        if i['status']['name'] == 'autodeploy':
+        if i['status']['name'] == body['data']['name']:
           net_uuid = i['metadata']['uuid']
           logging.info('net = %s' %net_uuid)
           break
