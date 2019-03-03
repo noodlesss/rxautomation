@@ -14,6 +14,12 @@ logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=loggin
 
 threads = []
 
+action_list = {
+    'checkcluster': check_cluster_status,
+    'create_network': network_create_v2.netcreate,
+    'deploypc': deploy_prism_central.deploy_pc
+}
+
 
 #publisher 
 def publisher(message):
@@ -66,7 +72,7 @@ def check_cluster_status(body):
                 logging.info('one minute please..')
                 time.sleep(60)
                 logging.info('True')
-                return True
+                True
             else:
                 logging.info('CLuster is not ready. sleeping 15 mins...')
                 time.sleep(900)
@@ -76,10 +82,30 @@ def check_cluster_status(body):
             time.sleep(900)
 
 
+
 def callback(ch, method, properties, body):
     body = json.loads(body)
     logging.info("[x] Received %r" % body)
     action = body['action']
+    action_func = action_list['action'] # assign function according to action
+    action_result = action_func(body) # action function called
+    if action != 'checkcluster' and action_result.status_code == 201 or action_result.status_code == 202:
+        task_uuid = action_result.json()['task_uuid']
+        thread_func(task_uuid, body)
+    logging.info('action result %s' %action_result)
+    logging.info(" [x] Done")
+
+
+# init Rabbitmq queue and listen for commands.
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+channel = connection.channel()
+channel.queue_declare(queue='deployer')    # deployer queue for actions to run on cluster
+channel.basic_consume(callback, queue='deployer', no_ack=True)
+logging.info('consumer started. listening..')
+channel.start_consuming()
+
+'''
+
     if action == 'checkcluster':    # check cluster  status
         cluster_status = check_cluster_status(body)
         if cluster_status == True:
@@ -94,18 +120,7 @@ def callback(ch, method, properties, body):
         publisher({'task': 'deploy_pc', 'result': deploypc.status_code}) # status code publsihed to main
         if deploypc.status_code == 202:
             task_uuid = deploypc.json()['task_uuid']
-            thread_func(task_uuid, body)
-    logging.info(" [x] Done")
-
-
-# init Rabbitmq queue and listen for commands.
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-channel = connection.channel()
-channel.queue_declare(queue='deployer')    # deployer queue for actions to run on cluster
-channel.basic_consume(callback, queue='deployer', no_ack=True)
-logging.info('consumer started. listening..')
-channel.start_consuming()
-
-
+            thread_func(task_uuid, body, check_task_status)
+'''
 
 

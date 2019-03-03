@@ -11,6 +11,7 @@ from telepot.delegate import (
 
 
 # Rabbitmq reply queue callback
+# called when received a message from reply queue. results of tasks.
 def reply_queue_callback(ch, method, properties, body):
     body = json.loads(body)
     logging.info('task: %s\n result: %s' %(body['task'], body['result']))
