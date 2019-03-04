@@ -18,7 +18,7 @@ def reply_queue_callback(ch, method, properties, body):
     if body['task'] == 'cluster_status' and body['result'] == 'cluster up':
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='Create network', callback_data='create_network')], 
-               [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploy_pc')]
+               [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploypc')]
            ])
         bot.sendMessage(chat_id, 'cluster %s:\n ' %envars['cluster_ip'], reply_markup=keyboard)
     else:
@@ -62,7 +62,7 @@ logging.info('bot started listening')
 bot.sendMessage(chat_id, 'container started')
 # start checking process?
 keyboard = InlineKeyboardMarkup(inline_keyboard=[
-               [InlineKeyboardButton(text='start cluster_ip: %s' %envars['cluster_ip'], callback_data='start')],
+               [InlineKeyboardButton(text='start cluster_ip: %s' %envars['cluster_ip'], callback_data='checkcluster')],
            ])
 bot.sendMessage(chat_id, 'a', reply_markup=keyboard)
 # Rabbitmq reply channel init
