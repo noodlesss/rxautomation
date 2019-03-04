@@ -5,7 +5,7 @@ import os
 
 
 def envars():
-    envars = {
+    environment_vars = {
         'cluster_ip': os.environ['cluster_ip'],
         'username': os.environ['username'],
         'password': os.environ['password'],
@@ -20,7 +20,7 @@ def envars():
         'domain_name_servers': os.environ['domain_name_servers'],
         'name': os.environ['name']
     }
-    return envars
+    return environment_vars
 
 
 

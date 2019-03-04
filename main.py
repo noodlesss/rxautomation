@@ -45,7 +45,7 @@ logging.basicConfig(filename='main_ctr.log', format='%(asctime)s:%(levelname)s:%
 logging.info('container started')
 #init vars
 logging.info('envars: %s' % os.environ.keys)
-envars = var_construct.envars
+envars = var_construct.envars()
 # deployer queue channel
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel_deployer = connection.channel()
