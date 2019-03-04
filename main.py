@@ -15,7 +15,7 @@ from telepot.delegate import (
 def reply_queue_callback(ch, method, properties, body):
     body = json.loads(body)
     logging.info('task: %s\n result: %s' %(body['task'], body['result']))
-    if body['task'] == 'cluster_status' and body['result'] == 'cluster up':
+    if body['task'] == 'checkcluster' and body['result'] == 'cluster up':
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='Create network', callback_data='create_network')], 
                [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploypc')]
