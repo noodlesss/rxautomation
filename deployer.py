@@ -67,7 +67,10 @@ def check_cluster_status(body):
                 logging.info('one minute please..')
                 time.sleep(60)
                 logging.info('True')
-                True
+                return True
+            elif data.status_code == 401:
+                logging.info('auth error')
+                return False
             else:
                 logging.info('CLuster is not ready. sleeping 15 mins...')
                 time.sleep(900)
