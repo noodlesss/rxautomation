@@ -14,11 +14,6 @@ logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=loggin
 
 threads = []
 
-action_list = {
-    'checkcluster': check_cluster_status,
-    'create_network': network_create_v2.netcreate,
-    'deploypc': deploy_prism_central.deploy_pc
-}
 
 
 #publisher 
@@ -95,6 +90,12 @@ def callback(ch, method, properties, body):
     logging.info('action result %s' %action_result)
     logging.info(" [x] Done")
 
+
+action_list = {
+    'checkcluster': check_cluster_status,
+    'create_network': network_create_v2.netcreate,
+    'deploypc': deploy_prism_central.deploy_pc
+}
 
 # init Rabbitmq queue and listen for commands.
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
