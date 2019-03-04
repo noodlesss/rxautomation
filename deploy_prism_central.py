@@ -3,7 +3,7 @@ from amnesia import nutanixApiv3
 
 pc_body = {  
       "resources":{  
-        "version":"5.10.1.1",
+        "version":"5.10.2",
         "should_auto_register":False,
         "pc_vm_list":[  
           {  
