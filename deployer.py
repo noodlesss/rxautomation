@@ -82,7 +82,7 @@ def callback(ch, method, properties, body):
     body = json.loads(body)
     logging.info("[x] Received %r" % body)
     action = body['action']
-    action_func = action_list['action'] # assign function according to action
+    action_func = action_list[action] # assign function according to action
     action_result = action_func(body) # action function called
     if action != 'checkcluster' and action_result.status_code == 201 or action_result.status_code == 202:
         task_uuid = action_result.json()['task_uuid']
