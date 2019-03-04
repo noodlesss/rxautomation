@@ -20,7 +20,7 @@ def reply_queue_callback(ch, method, properties, body):
                [InlineKeyboardButton(text='Create network', callback_data='create_network')], 
                [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploy_pc')]
            ])
-        bot.sendMessage(chat_id, 'cluster %s:\n ' %api3_vars['cluster_ip'], reply_markup=keyboard)
+        bot.sendMessage(chat_id, 'cluster %s:\n ' %envars['cluster_ip'], reply_markup=keyboard)
     else:
         bot.sendMessage(chat_id, '%s: %s' %(body['task'], body['result']))
 
