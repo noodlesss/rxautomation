@@ -62,7 +62,7 @@ logging.info('bot started listening')
 bot.sendMessage(chat_id, 'container started')
 # start checking process?
 keyboard = InlineKeyboardMarkup(inline_keyboard=[
-               [InlineKeyboardButton(text='start cluster_ip: %s' %api3_vars['cluster_ip'], callback_data='start')],
+               [InlineKeyboardButton(text='start cluster_ip: %s' %envars['cluster_ip'], callback_data='start')],
            ])
 bot.sendMessage(chat_id, 'a', reply_markup=keyboard)
 # Rabbitmq reply channel init
