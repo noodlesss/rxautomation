@@ -51,7 +51,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel_deployer = connection.channel()
 channel_deployer.queue_declare(queue='deployer')
 #telegram token for bot
-token = '168023423:AAFa-zgvR_8Xw8iRuyG2QxIyQdNCwMqDHA8'
+token = os.environ['token']
 chat_id = '165756165'
 logging.info('Token: %s' %token)
   #initialize bot
