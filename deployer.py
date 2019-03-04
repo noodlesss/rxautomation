@@ -14,7 +14,7 @@ logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=loggin
 
 threads = []
 
-
+task_check_action_list = ['deploypc']
 
 #publisher 
 def publisher(message):
@@ -91,9 +91,12 @@ def callback(ch, method, properties, body):
     action_result = action_func(body) # action function called
     if action == 'checkcluster':
         pass
-    elif action_result.status_code == 201 or action_result.status_code == 202:
-        task_uuid = action_result.json()['task_uuid']
-        thread_func(task_uuid, body)
+    elif action in no_task:
+        publisher({'task': action, 'result': action_result.text})
+    elif action in task_check_action_list:
+        if action_result.status_code == 201 or action_result.status_code == 202:
+            task_uuid = action_result.json()['task_uuid']
+            thread_func(task_uuid, body) # create thread to check task status based on uuid
     logging.info('action result %s' %action_result)
     logging.info(" [x] Done")
 
