@@ -91,7 +91,7 @@ def callback(ch, method, properties, body):
     action_result = action_func(body) # action function called
     if action == 'checkcluster':
         pass
-    elif action in no_task:
+    elif action not in task_check_action_list:
         publisher({'task': action, 'result': action_result.text})
     elif action in task_check_action_list:
         if action_result.status_code == 201 or action_result.status_code == 202:
@@ -104,7 +104,8 @@ def callback(ch, method, properties, body):
 action_list = {
     'checkcluster': check_cluster_status,
     'create_network': network_create_v2.netcreate,
-    'deploypc': deploy_prism_central.deploy_pc
+    'deploypc': deploy_prism_central.deploy_pc,
+    'register_pc': deploy_prism_central.register_pc
 }
 
 # init Rabbitmq queue and listen for commands.

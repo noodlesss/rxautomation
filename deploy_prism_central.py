@@ -33,6 +33,20 @@ pc_body = {
       }
     }
 
+pc_register = {
+       "ipAddresses":[],"username":"admin","password":"Nutanix/1234"
+    }
+
+def register_pc(body):
+    username = body['data']['username']
+    password = body['data']['password']
+    cluster_ip = body['data']['cluster_ip']
+    pc_ip = body['data']['pc_ip']
+    pc_register['ipAddresses'][0] = pc_ip
+    api = nutanixApiv(cluster_ip, username, password)
+    data = api.pc_register(body)
+    return data
+
 
 def deploy_pc(body):
     username = body['data']['username']
