@@ -21,6 +21,10 @@ def reply_queue_callback(ch, method, properties, body):
                [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploypc')]
            ])
         bot.sendMessage(chat_id, 'cluster %s:\n ' %envars['cluster_ip'], reply_markup=keyboard)
+    elif body['task'] == 'deploypc' and body['result'] == 'SUCCEEDED':
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton[text='Register pc', callback_data='register_pc']]])
+        bot.sendMessage(chat_id, 'PC ready', reply_markup=keyboard)
     else:
         bot.sendMessage(chat_id, '%s: %s' %(body['task'], body['result']))
 

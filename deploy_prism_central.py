@@ -1,5 +1,5 @@
 import json, requests, logging
-from amnesia import nutanixApiv3
+from amnesia import nutanixApiv3, nutanixApiv1
 
 pc_body = {  
       "resources":{  
@@ -43,8 +43,8 @@ def register_pc(body):
     cluster_ip = body['data']['cluster_ip']
     pc_ip = body['data']['pc_ip']
     pc_register['ipAddresses'][0] = pc_ip
-    api = nutanixApiv(cluster_ip, username, password)
-    data = api.pc_register(body)
+    api = nutanixApiv1(cluster_ip, username, password)
+    data = api.pc_register(pc_register)
     return data
 
 
