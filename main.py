@@ -31,9 +31,9 @@ def reply_queue_callback(ch, method, properties, body):
 
 # Telegram handler
 def handler(msg):
+    global waiting_for_vars
     if waiting_for_vars:
         global envars
-        global waiting_for_vars
         vars_from_bot = msg['text']
         envars = parse_info.get_vars_from_bot(vars_from_bot)
         if envars: 
