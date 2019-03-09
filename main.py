@@ -44,6 +44,7 @@ def bot_callback(msg):
         envars = parse_info.get_vars_from_bot(vars_from_bot)
         if envars: 
             waiting_for_vars = False
+            logging.info('vars:\n%s' %envars)
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='start cluster_ip: %s' %envars['cluster_ip'], callback_data='checkcluster')],
                ])
