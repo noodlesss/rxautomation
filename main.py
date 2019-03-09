@@ -31,16 +31,10 @@ def reply_queue_callback(ch, method, properties, body):
 
 # Telegram handler
 def handler(msg):
-    print(msg['text'])
-
-# Telegram callback
-def bot_callback(msg):
-    print(msg)
-    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
-    logging.info('Callback Query: %s' %(query_data))
     if waiting_for_vars:
         global envars
-        vars_from_bot = query_data
+        global waiting_for_vars
+        vars_from_bot = msg['text']
         envars = parse_info.get_vars_from_bot(vars_from_bot)
         if envars: 
             waiting_for_vars = False
@@ -49,12 +43,18 @@ def bot_callback(msg):
                [InlineKeyboardButton(text='start cluster_ip: %s' %envars['cluster_ip'], callback_data='checkcluster')],
                ])
             bot.answerCallbackQuery(query_id,text='start', reply_markup=keyboard)
-    else:
-        message = {'action': query_data, 'data': envars}
-        channel_deployer.basic_publish(exchange='',
-                      routing_key='deployer',
-                      body=json.dumps(message))
-        bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
+
+
+
+# Telegram callback
+def bot_callback(msg):
+    query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
+    logging.info('Callback Query: %s' %(query_data))
+    message = {'action': query_data, 'data': envars}
+    channel_deployer.basic_publish(exchange='',
+                  routing_key='deployer',
+                  body=json.dumps(message))
+    bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
 
 # Log object
 logging.basicConfig(filename='main_ctr.log', format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
