@@ -1,6 +1,6 @@
 import os,json, time, logging, requests, pika
 # import variable constructors
-import var_construct
+import var_construct, parse_info
 #telegram import libraries
 import telepot, time, re, sys
 from telepot.loop import MessageLoop, Orderer
@@ -23,7 +23,7 @@ def reply_queue_callback(ch, method, properties, body):
         bot.sendMessage(chat_id, 'cluster %s:\n ' %envars['cluster_ip'], reply_markup=keyboard)
     elif body['task'] == 'deploypc' and body['result'] == 'SUCCEEDED':
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton[text='Register pc', callback_data='register_pc']]])
+                [InlineKeyboardButton(text='Register pc', callback_data='register_pc')]])
         bot.sendMessage(chat_id, 'PC ready', reply_markup=keyboard)
     else:
         bot.sendMessage(chat_id, '%s: %s' %(body['task'], body['result']))
@@ -38,18 +38,31 @@ def bot_callback(msg):
     print(msg)
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     logging.info('Callback Query: %s' %(query_data))
-    message = {'action': query_data, 'data': envars}
-    channel_deployer.basic_publish(exchange='',
-                  routing_key='deployer',
-                  body=json.dumps(message))
-    bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
+    if waiting_for_vars:
+        global envars
+        vars_from_bot = query_data
+        envars = parse_info.get_vars_from_bot(vars_from_bot)
+        if envars: 
+            waiting_for_vars = False
+            keyboard = InlineKeyboardMarkup(inline_keyboard=[
+               [InlineKeyboardButton(text='start cluster_ip: %s' %envars['cluster_ip'], callback_data='checkcluster')],
+               ])
+            bot.answerCallbackQuery(query_id,text='start', reply_markup=keyboard)
+    else:
+        message = {'action': query_data, 'data': envars}
+        channel_deployer.basic_publish(exchange='',
+                      routing_key='deployer',
+                      body=json.dumps(message))
+        bot.answerCallbackQuery(query_id, text='action %s send to queue' %message['action'])
 
 # Log object
 logging.basicConfig(filename='main_ctr.log', format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 logging.info('container started')
 #init vars
-logging.info('envars: %s' % os.environ.keys)
-envars = var_construct.envars()
+#logging.info('envars: %s' % os.environ.keys)
+#envars = var_construct.envars()
+envars = {}
+waiting_for_vars = False
 # deployer queue channel
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel_deployer = connection.channel()
@@ -64,11 +77,12 @@ MessageLoop(bot, {'chat': handler,
                   'callback_query': bot_callback}).run_as_thread()
 logging.info('bot started listening')
 bot.sendMessage(chat_id, 'container started')
-# start checking process?
-keyboard = InlineKeyboardMarkup(inline_keyboard=[
+# ask how to collect vars process?
+'''keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='start cluster_ip: %s' %envars['cluster_ip'], callback_data='checkcluster')],
-           ])
-bot.sendMessage(chat_id, 'a', reply_markup=keyboard)
+           ])'''
+bot.sendMessage(chat_id, 'send variables')
+waiting_for_vars = True
 # Rabbitmq reply channel init
 channel_reply = connection.channel()
 channel_reply.queue_declare(queue='reply')
