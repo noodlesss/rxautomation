@@ -44,6 +44,7 @@ def handler(msg):
                ])
             bot.answerCallbackQuery(query_id,text='start', reply_markup=keyboard)
     elif waiting_for_vars == false and msg['text'] == 'reset':
+        logging.info('reset vars')
         waiting_for_vars = True
         envars = None
         bot.answerCallbackQuery(query_id, 'variables reset. send vars')
@@ -54,6 +55,10 @@ def handler(msg):
 def bot_callback(msg):
     query_id, from_id, query_data = telepot.glance(msg, flavor='callback_query')
     logging.info('Callback Query: %s' %(query_data))
+    if envars == None:
+        logging.info('no vars')
+        bot.answerCallbackQuery(query_id, text='no vars')
+        return None
     message = {'action': query_data, 'data': envars}
     channel_deployer.basic_publish(exchange='',
                   routing_key='deployer',
