@@ -44,12 +44,12 @@ def handler(msg):
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='start cluster_ip: %s' %envars['cluster_ip'], callback_data='checkcluster')],
                ])
-            bot.answerCallbackQuery(chat_id,text='start', reply_markup=keyboard)
+            bot.sendMessage(chat_id,text='start', reply_markup=keyboard)
     elif waiting_for_vars == false and msg['text'] == 'reset':
         logging.info('reset vars')
         waiting_for_vars = True
         envars = None
-        bot.answerCallbackQuery(chat_id, 'variables reset. send vars')
+        bot.sendMessage(chat_id, 'variables reset. send vars')
 
 
 
