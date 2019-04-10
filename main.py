@@ -34,6 +34,7 @@ def handler(msg):
     global waiting_for_vars
     content_type, chat_type, chat_id = telepot.glance(msg)
     if content_type == 'text': data = msg['text']
+    logging.info('msg handler: %s' %msg['text'])
     if waiting_for_vars:
         global envars
         vars_from_bot = data
