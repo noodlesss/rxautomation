@@ -14,8 +14,8 @@ def get_vars_from_bot(a):
             elif re.match('Prism UI Credentials:', i):
                 password = re.search(r'nx2Tech.*', i).group()
             elif re.match('Gateway:', i):
-                gateway_ip = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}',i).group()
-                network_address = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.',o).group() +'0'
+                gateway_ip = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', i).group()
+                network_address = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.', i).group() +'0'
             elif re.match('Secondary Gateway:', i):
                 secondary_gw = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', i).group()
             elif re.match('Secondary IP Range:', i):
