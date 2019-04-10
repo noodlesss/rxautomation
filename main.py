@@ -45,7 +45,7 @@ def handler(msg):
                [InlineKeyboardButton(text='start cluster_ip: %s' %envars['cluster_ip'], callback_data='checkcluster')],
                ])
             bot.sendMessage(chat_id,text='start', reply_markup=keyboard)
-    elif waiting_for_vars == false and msg['text'] == 'reset':
+    elif waiting_for_vars == False and msg['text'] == 'reset':
         logging.info('reset vars')
         waiting_for_vars = True
         envars = None

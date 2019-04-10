@@ -14,7 +14,7 @@ logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=loggin
 
 threads = []
 
-task_check_action_list = ['deploypc']
+task_check_action_list = ['deploypc', 'register_pc']
 
 #publisher 
 def publisher(message):
@@ -31,12 +31,13 @@ def check_task_status(task_uuid, body):
     username = body['data']['username']
     password = body['data']['password']
     base_url = body['data']['base_url']
+    action = body['data']['action']
     api = nutanixApiv3(base_url, username, password)
     n = 0
     while n < 3:
         data = api.task_status(task_uuid)
         if data.status_code == 200 and data.json()['status'] == 'SUCCEEDED':
-            publisher({'task': 'deploy_pc', 'result': 'SUCCEEDED'})
+            publisher({'task': action, 'result': 'SUCCEEDED'})
             return
         elif data.status_code == 200 and data.json()['status'] == 'RUNNING':
             logging.info('task status: RUNNING' )
@@ -89,6 +90,7 @@ def callback(ch, method, properties, body):
     action = body['action']
     action_func = action_list[action] # assign function according to action
     action_result = action_func(body) # action function called
+    # after action returns, select action task checker below
     if action == 'checkcluster':
         pass
     elif action not in task_check_action_list:
