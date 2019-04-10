@@ -2,12 +2,13 @@ import re, os, logging
 from datetime import datetime
 
 
-def get_vars_from_bot(al):
+def get_vars_from_bot(a):
     try:
+        al = a.split('\n')
         for i in al:
             if re.match('Start Date:', i):
                 start_date = re.search(r'2019-\d\d-\d\d \d\d:\d\d', i).group()
-                logging.info('start date: %s' %start_date)
+                print('start date: %s' %start_date)
             elif re.match('Cluster IP:', i):
                 cluster_ip = re.search(r'\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}', i).group()
             elif re.match('Prism UI Credentials:', i):
