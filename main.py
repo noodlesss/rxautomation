@@ -32,9 +32,11 @@ def reply_queue_callback(ch, method, properties, body):
 # Telegram handler
 def handler(msg):
     global waiting_for_vars
+    content_type, chat_type, chat_id = telepot.glance(msg)
+    if content_type == 'text': data = msg['text']
     if waiting_for_vars:
         global envars
-        vars_from_bot = msg['text']
+        vars_from_bot = data
         envars = parse_info.get_vars_from_bot(vars_from_bot)
         if envars: 
             waiting_for_vars = False
@@ -42,12 +44,12 @@ def handler(msg):
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='start cluster_ip: %s' %envars['cluster_ip'], callback_data='checkcluster')],
                ])
-            bot.answerCallbackQuery(query_id,text='start', reply_markup=keyboard)
+            bot.answerCallbackQuery(chat_id,text='start', reply_markup=keyboard)
     elif waiting_for_vars == false and msg['text'] == 'reset':
         logging.info('reset vars')
         waiting_for_vars = True
         envars = None
-        bot.answerCallbackQuery(query_id, 'variables reset. send vars')
+        bot.answerCallbackQuery(chat_id, 'variables reset. send vars')
 
 
 
