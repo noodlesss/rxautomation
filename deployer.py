@@ -98,8 +98,16 @@ def callback(ch, method, properties, body):
     body = json.loads(body)
     logging.info("[x] Received %r" % body)
     action = body['action']
-    action_func = action_list[action] # assign function according to action
-    action_result = action_func(body) # action function called
+    try:
+        action_func = action_list[action] # assign function according to action
+    except Exception as e:
+        logging.error('DID NOT FIND FUNCTION/ACTION: %s' %e)
+        publisher({'task':action, 'result': 'error: %e' %e})
+    try:
+        action_result = action_func(body) # action function called
+    except Exception as e:
+        logging.error('ERROR IN ACTION FUNCTION %s' %e)
+        publisher({'task':action, 'result': 'error: %e' %e})
     # after action returns, select action task checker below
     if action == 'checkcluster':
         pass

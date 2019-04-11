@@ -42,7 +42,7 @@ def register_pc(body):
     password = body['data']['password']
     cluster_ip = body['data']['cluster_ip']
     pc_ip = body['data']['pc_ip']
-    pc_register['ipAddresses'][0] = pc_ip
+    pc_register['ipAddresses'] = [pc_ip]
     api = nutanixApiv1(cluster_ip, username, password)
     data = api.pc_register(pc_register)
     return data
