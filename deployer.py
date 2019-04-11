@@ -1,4 +1,4 @@
-import pika, json, requests, threading, logging, network_create_v2, deploy_prism_central, time
+import pika, json, requests, threading, logging, network_create_v2, deploy_prism_central, time, datetime
 from amnesia import nutanixApiv3
 
 
@@ -61,6 +61,16 @@ def check_cluster_status(body):
     password = body['data']['password']
     base_url = body['data']['base_url']
     api = nutanixApiv3(base_url, username, password)
+    # calculating how many seconds we should wait to start the check process. 
+    # current time will be subtracted from start date. Result will be passed to time.sleep.
+    start_date = body['data']['start_date']
+    start_time_in_epoch = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M').timestamp()
+    if start_time_in_epoch > time.time():
+      wait_until_start_seconds = start_time_in_epoch - time.time()
+      time.sleep(wait_until_start_seconds+10)
+    else:
+        logging.error('start date is less than current time.')
+        return None
     while True:
         try:
             data = api.network_list()
