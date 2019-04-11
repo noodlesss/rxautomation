@@ -31,7 +31,7 @@ def check_task_status(task_uuid, body):
     username = body['data']['username']
     password = body['data']['password']
     base_url = body['data']['base_url']
-    action = body['data']['action']
+    action = body['action']
     api = nutanixApiv3(base_url, username, password)
     n = 0
     while n < 3:
