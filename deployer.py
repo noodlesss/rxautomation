@@ -10,7 +10,7 @@ from telepot.delegate import (
     per_chat_id, per_callback_query_origin, create_open, pave_event_space)
 
 #logging config
-logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
+logging.basicConfig(filename='d.log', format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 
 threads = []
 
