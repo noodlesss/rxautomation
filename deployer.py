@@ -69,6 +69,7 @@ def check_cluster_status(body):
     if start_time_in_epoch > time.time():
       wait_until_start_seconds = start_time_in_epoch - time.time()
       logging.info('waiting: %s' %wait_until_start_seconds)
+      logging.info('start time epoch: %s, time now: %s' %(start_time_in_epoch, time.time()))
       time.sleep(wait_until_start_seconds+10)
     while True:
         logging.info('starting cluster status check')
