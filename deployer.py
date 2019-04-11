@@ -65,13 +65,13 @@ def check_cluster_status(body):
     # current time will be subtracted from start date. Result will be passed to time.sleep.
     start_date = body['data']['start_date']
     start_time_in_epoch = datetime.datetime.strptime(start_date, '%Y-%m-%d %H:%M').timestamp()
-    log.info('start date: %s' %start_date)
+    logging.info('start date: %s' %start_date)
     if start_time_in_epoch > time.time():
       wait_until_start_seconds = start_time_in_epoch - time.time()
-      log.info('waiting: %s' %wait_until_start_seconds)
+      logging.info('waiting: %s' %wait_until_start_seconds)
       time.sleep(wait_until_start_seconds+10)
     while True:
-        log.info('starting cluster status check')
+        logging.info('starting cluster status check')
         try:
             data = api.network_list()
             if data.status_code == 200:
