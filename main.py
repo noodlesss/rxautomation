@@ -51,6 +51,13 @@ def handler(msg):
         waiting_for_vars = True
         envars = None
         bot.sendMessage(chat_id, 'variables reset. send vars')
+    if data == 'cmd':
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+               [InlineKeyboardButton(text='Create network', callback_data='create_network')], 
+               [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploypc')],
+               [InlineKeyboardButton(text='Register pc', callback_data='register_pc')]
+           ])
+        bot.sendMessage(chat_id, 'cluster %s:\n ' %envars['cluster_ip'], reply_markup=keyboard)
 
 
 
