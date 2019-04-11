@@ -68,9 +68,6 @@ def check_cluster_status(body):
     if start_time_in_epoch > time.time():
       wait_until_start_seconds = start_time_in_epoch - time.time()
       time.sleep(wait_until_start_seconds+10)
-    else:
-        logging.error('start date is less than current time.')
-        return None
     while True:
         try:
             data = api.network_list()
