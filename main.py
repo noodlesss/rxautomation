@@ -38,7 +38,11 @@ def handler(msg):
     if waiting_for_vars:
         global envars
         vars_from_bot = data
-        envars = parse_info.get_vars_from_bot(vars_from_bot)
+        try:
+            envars = parse_info.get_vars_from_bot(vars_from_bot)
+        except Exception as e:
+            logging.error('ERROR in handler: %s' %e)
+            bot.sendMessage(chat_id, text='error: %s' %e)
         if envars: 
             waiting_for_vars = False
             logging.info('vars:\n%s' %envars)
