@@ -147,3 +147,13 @@ class nutanixApi(object):
         s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
         data = s.get(self.base_url + 'alerts/', verify=False)
         return data
+
+## Set public key
+    def set_public_key(self, name, key):
+        requests.packages.urllib3.disable_warnings()
+        s = requests.Session()
+        s.auth = (self.username, self.password)
+        s.headers.update({'Content-Type': 'application/json; charset=utf-8'})
+        body = {'name':  name, 'key' : key}
+        data = s.post(self.base_url + 'cluster/public_keys/', json=body, verify=False)
+        return data

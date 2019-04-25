@@ -18,7 +18,8 @@ def reply_queue_callback(ch, method, properties, body):
     if body['task'] == 'checkcluster' and body['result'] == 'cluster up':
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='Create network', callback_data='create_network')], 
-               [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploypc')]
+               [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploypc')],
+               [InlineKeyboardButton(text='Set pub key', callback_data='set_pub_key')]
            ])
         bot.sendMessage(chat_id, 'cluster %s:\n ' %envars['cluster_ip'], reply_markup=keyboard)
     elif body['task'] == 'deploypc' and body['result'] == 'SUCCEEDED':
@@ -59,7 +60,8 @@ def handler(msg):
         keyboard = InlineKeyboardMarkup(inline_keyboard=[
                [InlineKeyboardButton(text='Create network', callback_data='create_network')], 
                [InlineKeyboardButton(text='Deploy Prism Central', callback_data='deploypc')],
-               [InlineKeyboardButton(text='Register pc', callback_data='register_pc')]
+               [InlineKeyboardButton(text='Register pc', callback_data='register_pc')],
+               [InlineKeyboardButton(text='Set pub key', callback_data='set_pub_key')]
            ])
         bot.sendMessage(chat_id, 'cluster %s:\n ' %envars['cluster_ip'], reply_markup=keyboard)
 

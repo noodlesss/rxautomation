@@ -1,6 +1,6 @@
 import pika, json, requests, threading, logging, network_create_v2, deploy_prism_central, time, datetime
 from amnesia import nutanixApiv3
-
+from nutanixv2api import nutanixApi
 
 #telegram import libraries
 import telepot, time, re, sys
@@ -93,6 +93,17 @@ def check_cluster_status(body):
             time.sleep(900)
 
 
+## Set public key
+def set_pub_key(body):
+    name = 'nuran'
+    with open('.ssh/nn.pub') as f:
+        key = f.read()
+    username = body['data']['username']
+    password = body['data']['password']
+    base_url = body['data']['base_url']
+    api = nutanixApi(base_url, username, password)
+    data = api.set_pub_key(name, key)
+    return data
 
 def callback(ch, method, properties, body):
     body = json.loads(body)
@@ -125,7 +136,8 @@ action_list = {
     'checkcluster': check_cluster_status,
     'create_network': network_create_v2.netcreate,
     'deploypc': deploy_prism_central.deploy_pc,
-    'register_pc': deploy_prism_central.register_pc
+    'register_pc': deploy_prism_central.register_pc,
+    'set_pub_key': set_pub_key
 }
 
 # init Rabbitmq queue and listen for commands.
