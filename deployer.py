@@ -100,7 +100,7 @@ def set_pub_key(body):
         key = f.read()
     username = body['data']['username']
     password = body['data']['password']
-    base_url = body['data']['base_url']
+    base_url = body['data']['api2_base_url']
     api = nutanixApi(base_url, username, password)
     data = api.set_public_key(name, key)
     return data
