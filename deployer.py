@@ -96,7 +96,7 @@ def check_cluster_status(body):
 ## Set public key
 def set_pub_key(body):
     name = 'nuran'
-    with open('~/.ssh/nn.pub') as f:
+    with open('./nn.pub') as f:
         key = f.read()
     username = body['data']['username']
     password = body['data']['password']
