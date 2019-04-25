@@ -119,6 +119,7 @@ def callback(ch, method, properties, body):
     except Exception as e:
         logging.error('ERROR IN ACTION FUNCTION %s' %e)
         publisher({'task':action, 'result': 'error: %s' %e})
+        return 
     # after action returns, select action task checker below
     if action == 'checkcluster':
         pass
