@@ -27,7 +27,7 @@ def reply_queue_callback(ch, method, properties, body):
                 [InlineKeyboardButton(text='Register pc', callback_data='register_pc')]])
         bot.sendMessage(chat_id, 'PC ready', reply_markup=keyboard)
     else:
-        bot.sendMessage(chat_id, '%s: %s' %(body['task'], body['result']))
+        bot.sendMessage(chat_id, '%s: %s' %(body['task'], body['result'][:10]))
 
 
 # Telegram handler

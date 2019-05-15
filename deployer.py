@@ -44,9 +44,10 @@ def check_task_status(task_uuid, body):
             logging.info('task check sleeping 2 minutes')
             time.sleep(120)
         else:
-            logging.info('task status: %s' %data.text)
+            logging.info('task status: %s' %data.text[:10])
             n+=1
             time.sleep(60)
+            publisher({'task': action, 'result': data.text[:10]})
     return
 
 # thread creator
